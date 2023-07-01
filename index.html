@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Date Game</title>
+
+    <!-- Bootstrap -->
+    <link
+      href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'
+      rel = 'stylesheet'
+      integrity='sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM'
+      crossorigin = 'anonymous'
+    >
+    <script
+      src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
+      integrity = 'sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz'
+      crossorigin = 'anonymous'
+    ></script>
+
+    <!-- JS -->
+    <script src = 'main.js' type = 'text/javascript'></script>
+
+    <link href = 'style.css' rel = 'stylesheet'>
+
+  </head>
+
+  <body onload = 'setDates();'>
+
+    <div class = 'row text-center bg-info p-5 mb-5'>
+      <a href = './index.html' style = 'text-decoration: none; color: #fff;'><h1>The Date Game</h1></a>
+    </div>
+
+    <div class = 'container g-0'>
+      <div class = 'jumbotron'>
+        <h1>What is this?</h1>
+        <p class = 'lead'>This is a proof-of-concept game where you can <a href = 'https://cs.uwaterloo.ca/~alopez-o/math-faq/node73.html'>'guess'</a> the day of week for a given date. Click the big blue button below to get started!</p>
+        <a class = 'btn btn-lg btn-primary' href = './play.html'>Start playing! ⏵</a>
+      </div>
+
+      <div class = 'jumbotron'>
+        <h1>Range</h1>
+        <div class = 'row'>
+          <div class = 'col-6'>
+            <label for = 'min'>Starting Bound</label>
+            <input id = 'min' class = 'form-control' type = 'date' />
+            <a class = 'btn m-1 btn-primary' href = 'javascript:saveMin()'>Save min</a>
+            <a class = 'btn m-1 btn-primary' href = 'javascript:resetMin()'>Reset min</a>
+          </div>
+          <div class = 'col-6'>
+            <label for = 'max'>Ending Bound</label>
+            <input id = 'max' class = 'form-control' type = 'date' />
+            <a class = 'btn m-1 btn-primary' href = 'javascript:saveMax()'>Save max</a>
+            <a class = 'btn m-1 btn-primary' href = 'javascript:resetMax()'>Reset max</a>
+          </div>
+        </div>
+      </div>
+
+      <div class = 'jumbotron'>
+        <h1>Locale</h1>
+        <div class = 'row'>
+          <div class = 'col-6'>
+            <select class = 'form-select' aria-label = 'Locale selection' id = 'locale'>
+            </select>
+            <a class = 'btn m-1 btn-primary' href = 'javascript:saveLocale()'>Save locale</a>
+            <a class = 'btn m-1 btn-primary' href = 'javascript:resetLocale()'>Reset locale</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
