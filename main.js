@@ -1,4 +1,4 @@
-var formats = { // Locale dump -- https://stackoverflow.com/a/9893752
+const formats = { // Locale dump -- https://stackoverflow.com/a/9893752
   'af-ZA': 'yyyy/MM/dd', // SOME OF THESE MAY BE OUTDATED
   'am-ET': 'd/M/yyyy',
   'ar-AE': 'dd/MM/yyyy',
@@ -211,12 +211,23 @@ var formats = { // Locale dump -- https://stackoverflow.com/a/9893752
   'zu-ZA': 'yyyy/MM/dd',
 };
 
+const GAME_MODES = [
+  'Standard',
+  'Verify',
+  'Blitz',
+];
+
 var GAME_START = null;
 var GAME_DURATION = null;
 var GAME_DATE = null;
 var GAME_MIN = new Date(1900, 0, 1);
 var GAME_MAX = new Date();
 var GAME_LOCALE = navigator.language;
+var GAME_MODE = GAME_MODES[0];
+var GAME_SCORES = [];
+
+var MODE_LIMIT = 1;
+var MODE_ITERATOR = 0;
 
 // https://www.w3schools.com/js/js_cookies.asp
 function setCookie(key, value) {
@@ -280,7 +291,6 @@ function saveMax(max = document.getElementById('max').valueAsDate.getTime()) {
 }
 
 function saveLocale(locale = Object.keys(formats)[document.getElementById('locale').value]) {
-  console.log(locale);
   if (locale) {
     setCookie('GAME_LOCALE', locale);
   } else {
@@ -327,7 +337,15 @@ function setDates() {
 }
 
 function randomDate(min = GAME_MIN, max = GAME_MAX) {
-  return new Date(min.getTime() + Math.random() * (max.getTime() - min.getTime()));
+  min = min.getTime();
+  max = max.getTime();
+
+  if (min > max) {
+    saveMin(null);
+    resetMax();
+  }
+
+  return new Date(min + Math.random() * (max - min));
 }
 
 function getDay(date) {
@@ -359,13 +377,24 @@ function getDay(date) {
 
 function match(day) {
   if (GAME_START) {
+    MODE_ITERATOR++;
     GAME_DURATION = new Date().getTime() - GAME_START;
     GAME_START = null;
     let header = document.getElementById('date');
     if (day == GAME_DATE.getDay()) {
       header.textContent = `Great job -- ${GAME_DATE.toLocaleDateString(GAME_LOCALE)} was ${getDay(GAME_DATE)}! Your time was ${GAME_DURATION / 1000} seconds!`;
+      GAME_SCORES.push(GAME_DURATION);
     } else {
       header.textContent = `Sorry, ${GAME_DATE.toLocaleDateString(GAME_LOCALE)} was not a ${getDay(day)}...`;
+    }
+    if (['Blitz', 'Verify'].includes(GAME_MODE)) {
+      if (MODE_ITERATOR != MODE_LIMIT) {
+        if (GAME_SCORES.length == MODE_ITERATOR) {
+          setTimeout(round, 3000);
+        }
+      } else if (GAME_MODE == 'Verify') {
+        setTimeout(verify, 3000);
+      }
     }
   }
 }
@@ -373,9 +402,57 @@ function match(day) {
 function startGame() {
   loadBounds();
 
+  loadMode();
+
+  round();
+}
+
+function round() {
+  clearTimeout(round);
+  resetGame();
+
   GAME_START = new Date().getTime();
 
   GAME_DATE = randomDate();
 
   document.getElementById('date').textContent = GAME_DATE.toLocaleDateString(GAME_LOCALE);
+}
+
+function verify(scores = GAME_SCORES) {
+  clearTimeout(verify);
+
+  let finalTime = 0;
+  for (let score of GAME_SCORES) {
+    finalTime += score;
+  }
+  finalTime /= MODE_LIMIT;
+
+  let header = document.getElementById('date');
+  header.textContent = `Congratulations, you've verified your average time of ${finalTime / 1000}!`;
+}
+
+function resetGame() {
+  GAME_START = null;
+  GAME_DURATION = null;
+  GAME_DATE = null;
+}
+
+function loadMode() {
+  const url = new URLSearchParams(window.location.search);
+  const mode = url.get('mode');
+
+  if (mode && GAME_MODES.includes(mode)) {
+    GAME_MODE = mode;
+    MODE_ITERATOR = 0;
+  }
+  switch (GAME_MODE) {
+    case 'Standard':
+      MODE_LIMIT = 1;
+      break;
+    case 'Verify':
+      MODE_LIMIT = 7;
+      break;
+    case 'Blitz':
+      MODE_LIMIT = -1;
+  }
 }
