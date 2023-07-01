@@ -389,7 +389,7 @@ function match(day) {
     }
     if (['Blitz', 'Verify'].includes(GAME_MODE)) {
       if (MODE_ITERATOR != MODE_LIMIT) {
-        if (GAME_SCORES.length == MODE_ITERATOR) {
+        if (GAME_SCORES.length == MODE_ITERATOR || GAME_MODE == 'Blitz') {
           setTimeout(round, 3000);
         }
       } else if (GAME_MODE == 'Verify') {
@@ -455,4 +455,10 @@ function loadMode() {
     case 'Blitz':
       MODE_LIMIT = -1;
   }
+}
+
+function play() {
+  let element = document.getElementById('game-mode');
+  let mode = element.value;
+  window.location.href = `./play.html?mode=${mode}`;
 }
